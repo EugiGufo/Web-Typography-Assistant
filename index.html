@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<!--
+  Web Typography Assistant
+  Copyright (C) 2026 Evgueni Sytchev
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published
+  by the Free Software Foundation, either version 3 of the License,
+  or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Typography Assistant</title>
+<style>
+body {
+	font-family: Times, "Times New Roman", serif;
+	font-size: 13pt;
+}
+#typoinputText { width: 90%; height: 200px; resize: vertical;
+            margin-top: 15px;
+            padding: 10px;
+            border: 3px solid #CCCCCC;
+            border-radius: 5px;
+            background: #F9F9F9; }
+#typoprepButton, #typocopyButton, #typoresetButton, #typosaveButton, #typoresetsettButton { margin-top: 10px; margin-right: 10px; padding: 5px 15px; font-family: New Times Roman; font-size: 12pt; border-radius: 5px; background: #CCCCCC; }
+#typoprepButton:hover, #typocopyButton:hover, #typoresetButton:hover, #typosaveButton:hover, #typoresetsettButton:hover { background: #4CAF50; }
+.typobutton-container { display: flex; gap: 10px; flex-wrap: wrap; }
+.typohidden { display: none; }
+.typooutput-container { margin-top: 20px; }
+#typooriginalText, #typoconvertedText {
+    background: #F4F4F4;
+    padding: 10px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+.typotext { margin-top: 15px; }
+#typoinfo, #typosupport { line-height: 1.6; }
+.typooption-group { margin-top: 30px; }
+.typooption-group label { margin-right: 10px; }
+.typosettings {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            border: 3px solid #CCCCCC;
+            border-radius: 5px;
+            background: #F9F9F9;
+        }
+.typosettings-link {
+            color: blue;
+            cursor: pointer;
+            text-decoration: underline;
+            display: inline-block;
+            margin-right: 10px;
+        }
+.typosettings input { position: absolute; left: -9999px; }
+.typosettings input[type="radio"]:checked + label, .typosettings input[type="checkbox"]:checked + label { background: #4CAF50; color: #FFFFFF; }
+.typosettings label.typopsevdoknopka {
+		    margin: 0 10px 5px -1px;
+		    padding: 1px 5px;
+		    border: 1px solid #AAAAAA;
+			border-radius: 6px;
+			background: #CCCCCC;
+			color: #000000;
+		    box-shadow: 0 2px 5px rgba(0, 0, 0, .12);
+		    cursor: pointer;
+			text-align: center;
+		}
+.typoswitch-container {
+		    display: flex;
+		    align-items: center;
+		    gap: 10px;
+		}
+.typoswitch {
+		    position: relative;
+		    display: inline-block;
+		    width: 50px;
+		    height: 20px;
+		}
+.typoswitch input {
+		    opacity: 0;
+		    width: 0;
+		    height: 0;
+		}
+.typoslider {
+		    position: absolute;
+		    cursor: pointer;
+		    top: 0;
+		    left: 0;
+		    right: 0;
+		    bottom: 0;
+		    background-color: #CCCCCC;
+		    border-radius: 16px;
+		    transition: 0.4s;
+		}
+.typoslider::before {
+		    content: "";
+		    position: absolute;
+		    height: 14px;
+		    width: 14px;
+		    left: 3px;
+		    bottom: 3px;
+		    background-color: white;
+		    border-radius: 50%;
+		    transition: 0.4s;
+		}
+input:checked + .typoslider { background-color: #4CAF50; }
+input:checked + .typoslider::before { transform: translateX(28px); }
+</style>
+</head>
+<body>
+	<h2>Web Typography Assistant</h2>
+	<h3>An advanced multilingual typography and text-normalisation tool for HTML publishing workflows</h3>
+	<span class="typosettings-link" onclick="toggleSettings()">Settings</span> <span class="typosettings-link" onclick="toggleInfotool()">What is this tool?</span>
+	<div class="typosettings" id="typosettings">
+	<h4>&laquo;Web Typography Assistant&raquo; settings [<a href="javascript:void(0);" onclick="toggleSettings()">&nwarhk; hide</a>]</h4>
+    <div class="typooption-group">
+        Which type of HTML codes do you prefer to use? 
+		<input type="radio" name="htmlFormat" value="mnemonic" id="mnemonic" checked><label for="mnemonic" class="typopsevdoknopka">mnemonic (&amp;mdash;)</label>
+        <input type="radio" name="htmlFormat" value="numeric" id="numeric"><label for="numeric" class="typopsevdoknopka">numeric (&amp;#8212;)</label>
+    </div>
+
+    <div class="typooption-group">
+        <label class="typoswitch-container">
+            <span>Do you want to use the &lt;br /&gt; tags?</span>
+            <label class="typoswitch">
+                <input type="checkbox" name="addBr" id="addBr">
+                <span class="typoslider"></span>
+            </label>
+        </label>
+    </div>
+
+    <div class="typooption-group">
+        <label class="typoswitch-container">
+            <span>Do you want to use the &lt;p&gt;...&lt;/p&gt; tags?</span>
+            <label class="typoswitch">
+                <input type="checkbox" name="addP" id="addP">
+                <span class="typoslider"></span>
+            </label>
+        </label>
+    </div>
+
+    <div class="typooption-group">
+        Type of primary (outer) quotation marks: 
+        <input type="radio" name="quotesType" value="double" id="kav1lvldouble" checked><label for="kav1lvldouble" class="typopsevdoknopka"> English double (“...”)</label>
+        <input type="radio" name="quotesType" value="french" id="kav1lvlfrench"><label for="kav1lvlfrench" class="typopsevdoknopka"> French («...»)</label>
+        <input type="radio" name="quotesType" value="german" id="kav1lvlgerman"><label for="kav1lvlgerman" class="typopsevdoknopka"> German („...“)</label>
+        <input type="radio" name="quotesType" value="single" id="kav1lvlsingle"><label for="kav1lvlsingle" class="typopsevdoknopka"> English single (‘...’)</label>
+        <input type="radio" name="quotesType" value="coding" id="kav1lvlcoding"><label for="kav1lvlcoding" class="typopsevdoknopka"> Coding style ("..." no conversion)</label>
+    </div>
+
+    <div class="typooption-group">
+        Type of secondary (internal) quotation marks: 
+        <input type="radio" name="subQuotesType" value="double" id="kav2lvldouble" checked><label for="kav2lvldouble" class="typopsevdoknopka"> “English double”</label>
+        <input type="radio" name="subQuotesType" value="french" id="kav2lvlfrench"><label for="kav2lvlfrench" class="typopsevdoknopka"> «French»</label>
+        <input type="radio" name="subQuotesType" value="german" id="kav2lvlgerman"><label for="kav2lvlgerman" class="typopsevdoknopka"> „German“</label>
+        <input type="radio" name="subQuotesType" value="single" id="kav2lvlsingle"><label for="kav2lvlsingle" class="typopsevdoknopka"> ‘English single’</label>
+    </div>
+
+    <div class="typooption-group">
+        Which type of hyphen should be used? Short hyphen or long hyphen? 
+        <input type="radio" name="dashType" value="ndash" id="ndashtype" checked><label for="ndashtype" class="typopsevdoknopka"> short hyphen (–)</label>
+        <input type="radio" name="dashType" value="mdash" id="mdashtype"><label for="mdashtype" class="typopsevdoknopka"> long hyphen (—)</label>
+    </div>
+	
+    <div class="typooption-group">
+	    <label class="typoswitch-container">
+	        <span>Convert URLs and web addresses into links? (&lt;a href="...)</span>
+	        <label class="typoswitch">
+	            <input type="checkbox" name="convertLinks" id="convertLinks">
+	            <span class="typoslider"></span>
+	        </label>
+	    </label>
+	</div>
+
+    <div class="typooption-group">
+	    <label class="typoswitch-container">
+	        <span>Convert NAKED URLs into links? (&lt;a href="...)</span>
+	        <label class="typoswitch">
+	            <input type="checkbox" name="convertBareDomains" id="convertBareDomains">
+	            <span class="typoslider"></span>
+	        </label>
+	    </label>
+	</div>
+
+	<div class="typooption-group">
+	    <label class="typoswitch-container">
+	        <span>Convert e-mail addresses into links? (&lt;a href="mailto:...)</span>
+	        <label class="typoswitch">
+	            <input type="checkbox" name="convertEmails" id="convertEmails">
+	            <span class="typoslider"></span>
+	        </label>
+	    </label>
+	</div>
+
+	<div class="typooption-group">
+	    <label class="typoswitch-container">
+	        <span>Convert telephone numbers into links? (&lt;a href="tel:...)</span>
+	        <label class="typoswitch">
+	            <input type="checkbox" name="convertPhones" id="convertPhones">
+	            <span class="typoslider"></span>
+	        </label>
+	    </label>
+	</div>
+
+	<div class="typooption-group">
+	    <label class="typoswitch-container">
+	        <span>Convert lists into lists with corresponding HTML tags?</span>
+	        <label class="typoswitch">
+	            <input type="checkbox" name="convertLists" id="convertLists">
+	            <span class="typoslider"></span>
+	        </label>
+	    </label>
+	</div>
+	<button id="typosaveButton" onclick="saveSettings()">Save</button> <button id="typoresetsettButton" onclick="resetSettings()">Reset</button>
+	</div>
+	<div class="typosettings" id="typoinfo"><h4>What is the &laquo;Web Typography Assistant&raquo;? [<a href="javascript:void(0);" onclick="toggleInfotool()">&nwarhk; hide</a>]</h4>Il&nbsp;&laquo;Tipografo per il&nbsp;web&raquo; &egrave;&nbsp;uno strumento online che semplifica e&nbsp;velocizza la&nbsp;preparazione dei testi per la&nbsp;pubblicazione sul web. Esso&nbsp;&ndash; lo&nbsp;strumento&nbsp;&ndash; sar&agrave; utile a&nbsp;tutti coloro che non sono indifferenti a&nbsp;come compaiono sugli schermi i&nbsp;testi da&nbsp;loro pubblicati, ma&nbsp;che non hanno abbastanza tempo o&nbsp;pazienza per il&nbsp;lungo lavoro manuale di&nbsp;correzione delle lineette (spesso confuse con i&nbsp;trattini), delle virgolette (spesso confuse con il&nbsp;simbolo dei pollici), degli apostrofi (spesso confusi con il&nbsp;simbolo del minuto), degli spazi unificatori (da&nbsp;utilizzare dopo gli articoli, le&nbsp;congiunzioni e&nbsp;le&nbsp;preposizioni e&nbsp;in&nbsp;tante altre situazioni), degli spazi doppi e&nbsp;degli spazi mancanti, e&nbsp;di&nbsp;tante altre cose noiose e&nbsp;ripetitive. Con un&nbsp;solo clic su&nbsp;un&nbsp;pulsante, qualsiasi persona&nbsp;&ndash; anche la&nbsp;pi&ugrave; pigra o&nbsp;la&nbsp;meno esperta in&nbsp;tipografia&nbsp;&ndash; pu&ograve; rendere il&nbsp;testo pianificato per la&nbsp;pubblicazione molto pi&ugrave; bello e&nbsp;leggibile.<br />
+The &lsquo;Web Typography Assistant&rsquo; is&nbsp;an&nbsp;online tool that simplifies and speeds up&nbsp;the preparation of&nbsp;text for publication on&nbsp;the web. This tool will be&nbsp;useful to&nbsp;anyone who cares about how the text they publish appears on&nbsp;screen, but who lacks the time or&nbsp;patience for the laborious manual task of&nbsp;correcting en&nbsp;dashes (often confused with hyphens), quotation marks (often confused with the thumbs-up symbol), apostrophes (often confused with the minute symbol), non-breaking spaces (to&nbsp;be&nbsp;used after articles, conjunctions and prepositions, and in&nbsp;many other situations), double spaces and missing spaces, and many other tedious and repetitive tasks. With a&nbsp;single click of&nbsp;a&nbsp;button, anyone&nbsp;&mdash; even the laziest or&nbsp;least typographically savvy person&nbsp;&mdash; can make text intended for publication much more attractive and readable.<br />
+And since this version of&nbsp;my &lsquo;Web Typographer&rsquo; is&nbsp;capable of&nbsp;following the typographical rules of&nbsp;various European languages and performing some additional operations for preparing text for the web, I&nbsp;recommend that new or&nbsp;occasional users consult the &lsquo;Settings&rsquo; section before starting work.<br />
+Here, I&nbsp;list, using simple text, all the things my &lsquo;Web Typographer&rsquo; can currently&nbsp;do:<br />
+&mdash;&nbsp;Multilingual typography support (Russian, English, Italian, French, Spanish, Portuguese and German). <br />
+&mdash;&nbsp;Language-specific handling of&nbsp;articles, prepositions, abbreviations and quotation marks. <br />
+&mdash;&nbsp;Automatic application of&nbsp;non-breaking spaces according to&nbsp;language conventions. <br />
+&mdash;&nbsp;Support for multiple quotation mark styles and HTML output formats.<br />
+&mdash;&nbsp;Removes unnecessary spaces before punctuation marks<br />
+&mdash;&nbsp;Inserts missing spaces after punctuation marks<br />
+&mdash;&nbsp;Removes spaces before percentage symbols<br />
+&mdash;&nbsp;Corrects spacing around round and square brackets<br />
+&mdash;&nbsp;Automatically inserts non-breaking spaces after conjunctions<br />
+&mdash;&nbsp;Automatically inserts non-breaking spaces after prepositions<br />
+&mdash;&nbsp;Binds articles to&nbsp;the following word (English, Italian, French and Spanish)<br />
+&mdash;&nbsp;Converts dimensions written with &laquo;x&raquo; into the multiplication symbol (&times;)<br />
+&mdash;&nbsp;Converts common fractions (&frac14;, &frac12;, &frac34;, ⅓, ⅔, ⅕, ⅖, ⅗, ⅘, ⅙, ⅚, ⅛, ⅜, ⅝, ⅞)<br />
+&mdash;&nbsp;Converts <sup class="reg">&reg;</sup>, &copy;, (TM) and (P) into their corresponding symbols<br />
+&mdash;&nbsp;Normalises apostrophes in&nbsp;Latin-script texts<br />
+&mdash;&nbsp;Automatically generates nested quotation marks<br />
+&mdash;&nbsp;Supports multiple quotation mark styles<br />
+&mdash;&nbsp;Supports multiple dash styles<br />
+&mdash;&nbsp;Converts URLs into clickable hyperlinks<br />
+&mdash;&nbsp;Converts bare domains into clickable hyperlinks<br />
+&mdash;&nbsp;Converts e-mail addresses into clickable mailto links<br />
+&mdash;&nbsp;Converts telephone numbers into clickable tel links<br />
+&mdash;&nbsp;Converts plain-text lists into HTML lists<br />
+&mdash;&nbsp;Creates non-breaking constructions for telephone numbers<br />
+&mdash;&nbsp;Binds years to&nbsp;dates<br />
+&mdash;&nbsp;Creates non-breaking date and month ranges<br />
+&mdash;&nbsp;Binds initials to&nbsp;surnames<br />
+&mdash;&nbsp;Formats measurement units and attaches them to&nbsp;numbers<br />
+&mdash;&nbsp;Handles BCE/CE abbreviations<br />
+&mdash;&nbsp;Handles abbreviations such as&nbsp;P.S., P.P.S., etc., e.g., i.e., and similar constructions<br />
+&mdash;&nbsp;Binds legal entity abbreviations to&nbsp;company names<br />
+&mdash;&nbsp;Formats references such as&nbsp;page numbers, figures and illustrations<br />
+&mdash;&nbsp;Formats addresses and common location abbreviations<br />
+&mdash;&nbsp;Inserts commas before coordinating conjunctions where required<br />
+&mdash;&nbsp;Handles language-specific hyphenation patterns and compound expressions<br />
+&mdash;&nbsp;Supports multilingual typographic rules</div>
+	
+	<div class="typotext">The text to&nbsp;be&nbsp;processed (and, once you&rsquo;ve processed&nbsp;it, to&nbsp;use on&nbsp;your website):<br />
+    <textarea id="typoinputText"></textarea>
+
+    <div class="typobutton-container">
+        <button id="typoprepButton" onclick="convertText()">Process the text</button>
+        <button id="typocopyButton" class="typohidden" onclick="copyText()">Copy</button>
+        <button id="typoresetButton" class="typohidden" onclick="resetText()">Reset</button>
+    </div>
+	</div>
+
+    <div class="typooutput-container typohidden" id="typooutputContainer">
+        <h3>The original text that had been included:</h3>
+        <pre id="typooriginalText"></pre>
+        <h3>Here is how the text will appear in the browser:</h3>
+        <pre id="typoconvertedText"></pre>
+    </div>
+    
+    <script>
+        function convertText() {
+            let text = document.getElementById("typoinputText").value;
+            document.getElementById("typooriginalText").textContent = text;
+
+            let htmlFormat = document.querySelector('input[name="htmlFormat"]:checked').value;
+            let quotesType = document.querySelector('input[name="quotesType"]:checked').value;
+            let subQuotesType = document.querySelector('input[name="subQuotesType"]:checked').value;
+            let dashType = document.querySelector('input[name="dashType"]:checked').value;
+
+            let addBr = document.getElementById("addBr").checked ? "yes" : "no";
+            let addP = document.getElementById("addP").checked ? "yes" : "no";
+            let convertLinks = document.getElementById("convertLinks").checked ? "yes" : "no";
+			let convertBareDomains = document.getElementById("convertBareDomains").checked ? "yes" : "no";
+            let convertEmails = document.getElementById("convertEmails").checked ? "yes" : "no";
+            let convertPhones = document.getElementById("convertPhones").checked ? "yes" : "no";
+            let convertLists = document.getElementById("convertLists").checked ? "yes" : "no";
+
+    fetch("convert.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `text=${encodeURIComponent(text)}&htmlFormat=${htmlFormat}&quotesType=${quotesType}&subQuotesType=${subQuotesType}&dashType=${dashType}&addBr=${addBr}&addP=${addP}&convertLinks=${convertLinks}&convertBareDomains=${convertBareDomains}&convertEmails=${convertEmails}&convertPhones=${convertPhones}&convertLists=${convertLists}`
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById("typoinputText").value = data;
+        document.getElementById("typoconvertedText").innerHTML = data;
+        document.getElementById("typocopyButton").classList.remove("typohidden");
+        document.getElementById("typoresetButton").classList.remove("typohidden");
+        document.getElementById("typooutputContainer").classList.remove("typohidden");
+    })
+    .catch(error => console.error("Error:", error));
+}
+
+        function copyText() {
+            let textArea = document.getElementById("typoinputText");
+            textArea.select();
+            document.execCommand("copy");
+            alert("Text copied!");
+        }
+
+        function resetText() {
+            document.getElementById("typoinputText").value = "";
+            document.getElementById("typocopyButton").classList.add("typohidden");
+            document.getElementById("typoresetButton").classList.add("typohidden");
+            document.getElementById("typooutputContainer").classList.add("typohidden");
+        }
+		document.getElementById("typoinputText").addEventListener("input", function () {
+            let resetButton = document.getElementById("typoresetButton");
+            if (this.value.trim() !== "") {
+                resetButton.classList.remove("typohidden");
+            } else {
+                resetButton.classList.add("typohidden");
+            }
+        });
+    </script>
+	<script>
+        function toggleSettings() {
+            let settingsDiv = document.getElementById("typosettings");
+            settingsDiv.style.display = (settingsDiv.style.display === "none" || settingsDiv.style.display === "") ? "block" : "none";
+        }
+		function toggleInfotool() {
+            let supportDiv = document.getElementById("typoinfo");
+            supportDiv.style.display = (supportDiv.style.display === "none" || supportDiv.style.display === "") ? "block" : "none";
+        }
+		function toggleSupportool() {
+            let supportDiv = document.getElementById("typosupport");
+            supportDiv.style.display = (supportDiv.style.display === "none" || supportDiv.style.display === "") ? "block" : "none";
+        }
+    </script>
+	<script>
+    function saveSettings() {
+    let settings = {};
+    
+    document.querySelectorAll('.typosettings input[type="radio"]:checked').forEach(input => {
+        settings[input.name] = input.value;
+    });
+
+    document.querySelectorAll('.typosettings input[type="checkbox"]').forEach(input => {
+        settings[input.name] = input.checked ? "yes" : "no";
+    });
+
+    document.cookie = "userSettings=" + JSON.stringify(settings) + ";path=/;max-age=31536000"; // 1 year for saved settings
+    alert("Settings saved!");
+}
+
+function loadSettings() {
+    let cookies = document.cookie.split("; ");
+    let settingsCookie = cookies.find(row => row.startsWith("userSettings="));
+
+    if (settingsCookie) {
+        let settings = JSON.parse(settingsCookie.split("=")[1]);
+
+        Object.keys(settings).forEach(name => {
+            let input = document.querySelector(`.typosettings input[name="${name}"]`);
+            if (input) {
+                if (input.type === "radio") {
+                    input.checked = true;
+                } else if (input.type === "checkbox") {
+                    input.checked = (settings[name] === "yes");
+                }
+            }
+        });
+    }
+}
+
+    function resetSettings() {
+        document.cookie = "userSettings=;path=/;max-age=0";
+        document.querySelectorAll('.typosettings input[type="radio"]').forEach(input => {
+            if (input.hasAttribute("checked")) {
+                input.checked = true;
+            } else {
+                input.checked = false;
+            }
+        });
+        alert("Settings have been reset to their default values!");
+    }
+    window.onload = loadSettings;
+</script>
+</body>
+</html>
